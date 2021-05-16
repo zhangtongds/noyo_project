@@ -16,6 +16,15 @@ class Person(db.Model):
     email = db.Column(db.String(64), unique=True, nullable=False)
     age = db.Column(db.String(15))
 
+    def __init__(self, user_id, first_name, middle_name, last_name, email, age):
+        self.user_id = user_id
+        self.first_name = first_name
+        self.first_name = first_name
+        self.middle_name = middle_name
+        self.last_name = last_name
+        self.email = email
+        self.age = age
+
     def __repr__(self):
         """Provide helpful representation when printed."""
         return "<User user_id={} first_name={} middle_name={} last_name={} email={} age={} >".format(self.user_id, self.first_name, self.middle_name, self.last_name, self.email, self.age)
