@@ -14,10 +14,9 @@ class Person(db.Model):
     middle_name = db.Column(db.String(25), nullable=True)
     last_name = db.Column(db.String(25), nullable=False)
     email = db.Column(db.String(64), unique=True, nullable=False)
-    age = db.Column(db.String(15))
+    age = db.Column(db.Integer, nullable=False)
 
-    def __init__(self, user_id, first_name, middle_name, last_name, email, age):
-        self.user_id = user_id
+    def __init__(self, first_name, middle_name, last_name, email, age):
         self.first_name = first_name
         self.first_name = first_name
         self.middle_name = middle_name
