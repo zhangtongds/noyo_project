@@ -61,6 +61,25 @@ def get_user(id):
     }
 
 
+@app.route('/users/<id>', methods=['PUT'])
+def update_user(id):
+    pass
+
+
+@app.route('/users/<id>', methods=['DELETE'])
+def delete_user(id):
+    person = Person.query.get(id)
+    if not person:
+        not_found_error = generate_error_response(
+            404, "Not found", "User not found in db.")
+        return not_found_error
+    db.session.delete(person)
+    db.session.commit()
+    success_response = generate_success_response(
+        msg='User was successfully deleted.')
+    return success_response
+
+
 @app.route('/users')
 def get_users():
     return jsonify([

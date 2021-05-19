@@ -13,7 +13,7 @@ class Person(db.Model):
     first_name = db.Column(db.String(25), nullable=False)
     middle_name = db.Column(db.String(25), nullable=True)
     last_name = db.Column(db.String(25), nullable=False)
-    email = db.Column(db.String(64), unique=True, nullable=False)
+    email = db.Column(db.String(50), unique=True, nullable=False)
     age = db.Column(db.Integer, nullable=False)
 
     def __init__(self, first_name, middle_name, last_name, email, age):
@@ -33,7 +33,7 @@ def connect_to_db(app):
     """Connect to database."""
 
     app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql:///person"
-    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+    # app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     db.app = app
     db.init_app(app)
 
