@@ -1,16 +1,36 @@
 from flask import Flask, jsonify, request
-from model import db, Person, connect_to_db
+from flask_sqlalchemy import SQLAlchemy
 from utils import generate_success_response, generate_error_response
 
 
 app = Flask(__name__)
+app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql:///person"
+db = SQLAlchemy(app)
 
 
-# @app.route('/')
-# def hello_world():
-#     person = Person.query.all()
-#     print(person)
-#     return 'hello world'
+class Person(db.Model):
+    """The person model."""
+
+    __tablename__ = "person"
+
+    user_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    first_name = db.Column(db.String(25), nullable=False)
+    middle_name = db.Column(db.String(25), nullable=True)
+    last_name = db.Column(db.String(25), nullable=False)
+    email = db.Column(db.String(50), unique=True, nullable=False)
+    age = db.Column(db.Integer, nullable=False)
+
+    def __init__(self, first_name, middle_name, last_name, email, age):
+        self.first_name = first_name
+        self.first_name = first_name
+        self.middle_name = middle_name
+        self.last_name = last_name
+        self.email = email
+        self.age = age
+
+    def __repr__(self):
+        """Provide helpful representation when printed."""
+        return "<User user_id={} first_name={} middle_name={} last_name={} email={} age={} >".format(self.user_id, self.first_name, self.middle_name, self.last_name, self.email, self.age)
 
 
 @app.route('/user', methods=['POST'])
@@ -95,6 +115,4 @@ def get_users():
 
 
 if __name__ == '__main__':
-    connect_to_db(app)
-    app.debug = True
-    app.run()
+    app.run(debug=True)
