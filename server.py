@@ -27,11 +27,7 @@ class Person(db.Model):
         self.last_name = last_name
         self.email = email
         self.age = age
-
-    def __repr__(self):
-        """Provide helpful representation when printed."""
-        return "<User user_id={} first_name={} middle_name={} last_name={} email={} age={} >".format(self.user_id, self.first_name, self.middle_name, self.last_name, self.email, self.age)
-
+        
 
 @app.route('/user', methods=['POST'])
 def add_user():
