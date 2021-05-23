@@ -1,5 +1,8 @@
 from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
+
+from uuid import uuid1
+
 from utils import generate_success_response, generate_error_response
 
 
@@ -13,14 +16,18 @@ class Person(db.Model):
 
     __tablename__ = "person"
 
-    user_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    user_id = db.Column(db.String(50), nullable=False)
     first_name = db.Column(db.String(25), nullable=False)
     middle_name = db.Column(db.String(25), nullable=True)
     last_name = db.Column(db.String(25), nullable=False)
-    email = db.Column(db.String(50), unique=True, nullable=False)
+    email = db.Column(db.String(50), nullable=False)
     age = db.Column(db.Integer, nullable=False)
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
+    is_latest = db.Column(db.Boolean, default=True)
 
-    def __init__(self, first_name, middle_name, last_name, email, age):
+    def __init__(self, user_id, first_name, middle_name, last_name, email, age):
+        self.user_id = user_id
         self.first_name = first_name
         self.first_name = first_name
         self.middle_name = middle_name
@@ -35,6 +42,8 @@ def add_user():
     app.logger.info(f'Start to create user using data: {data}.')
     # TODO: Validate email.
     try:
+        user_id = uuid1()
+        print("create uuid:", user_id)
         first_name = data['first_name']
         middle_name = data.get('middle_name')
         last_name = data['last_name']
@@ -50,71 +59,80 @@ def add_user():
             msg="Missing first_name or last_name or email or age field.")
         return input_error
 
-    new_user = Person(first_name, middle_name,
+    new_user = Person(user_id, first_name, middle_name,
                       last_name, email, age)
     db.session.add(new_user)
     db.session.commit()
     success_response = generate_success_response(
-        msg='User was successfully created.')
+        msg=f'User was successfully created.User id: {new_user.user_id}')
     return success_response
 
 
 @app.route('/users/<id>')
 def get_user(id):
     app.logger.info(f"Get user using user_id: {id}")
-    person = Person.query.get(id)
-    if not person:
+    user = Person.query.filter_by(user_id=id, is_latest=True).first()
+    if not user:
         not_found_error = generate_error_response(
             404, "Not found", "User not found in db.")
         return not_found_error
     return jsonify({
-        'user_id': person.user_id,
-        'first_name': person.first_name,
-        'middle_name': person.middle_name,
-        'last_name': person.last_name,
-        'email': person.email,
-        'age': person.age,
+        'user_id': user.user_id,
+        'first_name': user.first_name,
+        'middle_name': user.middle_name,
+        'last_name': user.last_name,
+        'email': user.email,
+        'age': user.age,
     })
 
 
 @app.route('/users/<id>', methods=['PUT'])
 def update_user(id):
     data = request.get_json()
-    person = Person.query.get(id)
-    if not person:
+    # user = Person.query.filter_by(user_id=id, is_latest=True).first()
+    user = Person.query.filter_by(user_id=id).first()
+    if not user:
         required_field_error = generate_error_response(
             msg=f"Cannot find user_id {id}.")
         return required_field_error
 
-    if 'first_name' in data:
-        person.first_name = data['first_name']
-    if 'middle_name' in data:
-        person.middle_name = data['middle_name']
-    if 'last_name' in data:
-        person.last_name = data['last_name']
-    if 'email' in data:
-        person.email = data['email']
-    if 'age' in data:
-        person.age = data['age']
+   
+    
+
+    first_name = data['first_name'] if 'first_name' in data else user.first_name
+    middle_name = data['middle_name'] if 'middle_name' in data else user.middle_name
+    last_name = data['last_name'] if 'last_name' in data else user.last_name
+    email = data['email'] if 'email' in data else user.email
+    age = data['age'] if 'age' in data else user.age
+
+    new_user = Person(user.user_id, first_name, middle_name,
+                      last_name, email, age)
+
+    db.session.add(new_user)
+    
+    # Deactivate old user object.
+    user.is_latest = False
+    
     db.session.commit()
+
     return jsonify({
-        'user_id': person.user_id,
-        'first_name': person.first_name,
-        'middle_name': person.middle_name,
-        'last_name': person.last_name,
-        'email': person.email,
-        'age': person.age,
+        'user_id': user.user_id,
+        'first_name': user.first_name,
+        'middle_name': user.middle_name,
+        'last_name': user.last_name,
+        'email': user.email,
+        'age': user.age,
     })
 
 
 @app.route('/users/<id>', methods=['DELETE'])
 def delete_user(id):
-    person = Person.query.get(id)
-    if not person:
+    user = Person.query.filter_by(user_id=id, is_latest=True).first()
+    if not user:
         not_found_error = generate_error_response(
             404, "Not found", "User not found in db.")
         return not_found_error
-    db.session.delete(person)
+    db.session.delete(user)
     db.session.commit()
     success_response = generate_success_response(
         msg='User was successfully deleted.')
@@ -125,13 +143,13 @@ def delete_user(id):
 def get_users():
     return jsonify([
         {
-            'user_id': person.user_id,
-            'first_name': person.first_name,
-            'middle_name': person.middle_name,
-            'last_name': person.last_name,
-            'email': person.email,
-            'age': person.age,
-        } for person in Person.query.all()
+            'user_id': user.user_id,
+            'first_name': user.first_name,
+            'middle_name': user.middle_name,
+            'last_name': user.last_name,
+            'email': user.email,
+            'age': user.age,
+        } for user in Person.query.filter_by(is_latest=True).all()
     ])
 
 
