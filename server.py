@@ -27,12 +27,12 @@ class Person(db.Model):
         self.last_name = last_name
         self.email = email
         self.age = age
-        
+
 
 @app.route('/user', methods=['POST'])
 def add_user():
     data = request.get_json()
-    app.logger.info(f"Start to create user using data: {data}.")
+    app.logger.info(f'Start to create user using data: {data}.')
     # TODO: Validate email.
     try:
         first_name = data['first_name']
@@ -67,19 +67,44 @@ def get_user(id):
         not_found_error = generate_error_response(
             404, "Not found", "User not found in db.")
         return not_found_error
-    return {
+    return jsonify({
         'user_id': person.user_id,
         'first_name': person.first_name,
         'middle_name': person.middle_name,
         'last_name': person.last_name,
         'email': person.email,
         'age': person.age,
-    }
+    })
 
 
 @app.route('/users/<id>', methods=['PUT'])
 def update_user(id):
-    pass
+    data = request.get_json()
+    person = Person.query.get(id)
+    if not person:
+        required_field_error = generate_error_response(
+            msg=f"Cannot find user_id {id}.")
+        return required_field_error
+
+    if 'first_name' in data:
+        person.first_name = data['first_name']
+    if 'middle_name' in data:
+        person.middle_name = data['middle_name']
+    if 'last_name' in data:
+        person.last_name = data['last_name']
+    if 'email' in data:
+        person.email = data['email']
+    if 'age' in data:
+        person.age = data['age']
+    db.session.commit()
+    return jsonify({
+        'user_id': person.user_id,
+        'first_name': person.first_name,
+        'middle_name': person.middle_name,
+        'last_name': person.last_name,
+        'email': person.email,
+        'age': person.age,
+    })
 
 
 @app.route('/users/<id>', methods=['DELETE'])
