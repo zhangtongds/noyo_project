@@ -10,8 +10,6 @@ HouseMap was created by Tong Zhang, a software engineer in Mountain View, CA. Le
 
 Python, Flask, SQLAlchemy, PostgreSQL
 
-## Features
-
 ## Setup/Installation
 
 ### Requirements
@@ -66,7 +64,4 @@ Run the app from the command line in watch mode:
 $FLASK_APP=server.py FLASK_ENV=development flask run
 ```
 
-## Looking Forward
-* Property recommendations for user using maching learning classfiers.
-* Interactive charts where user can filter out results by year, property type, etc.
-
+## Results
