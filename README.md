@@ -88,6 +88,7 @@ Get all users
 <img width="1395" alt="Screen Shot 2021-05-29 at 8 21 41 PM" src="https://user-images.githubusercontent.com/28516028/120090967-7c31fc00-c0bb-11eb-9d1e-d6afd12a55e9.png">
 
 The database
+
 <img width="735" alt="Screen Shot 2021-05-29 at 8 27 30 PM" src="https://user-images.githubusercontent.com/28516028/120091063-4c372880-c0bc-11eb-8352-8320d476868b.png">
 
 <img width="925" alt="Screen Shot 2021-05-29 at 8 22 16 PM" src="https://user-images.githubusercontent.com/28516028/120090974-91a72600-c0bb-11eb-846f-411b3455cd59.png">
