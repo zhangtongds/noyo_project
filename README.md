@@ -66,11 +66,11 @@ $ exit()
 
 ```
 
-Run the app from the command line:
+Run the app from the command line in watch mode:
 
 ```
 
-$ python server.py
+$FLASK_APP=server.py FLASK_ENV=development flask run
 
 ```
 

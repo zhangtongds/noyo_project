@@ -1,6 +1,5 @@
-import unittest
-
 import json
+import unittest
 from server import app, db
 
 SUCCESS_USER_1 = {
